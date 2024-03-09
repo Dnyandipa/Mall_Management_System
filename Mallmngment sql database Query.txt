@@ -1,0 +1,448 @@
+Create database mallmanagement 
+_____________________________________________________________________________
+create table adminlogin
+(username varchar(30),
+password varchar(30))
+
+insert into adminlogin values('admin','123456'),
+('Dnyandipa','Girase')
+
+select * from adminlogin
+
+create or alter procedure sp_admin_login
+@username varchar(30),
+@password varchar(30)
+as
+begin
+select * from adminlogin where username=@username
+and password=@password
+end
+
+________________________________________________________________________________
+create table shoplogin
+(username varchar(30),
+password varchar(30))
+
+insert into shoplogin values('admin','123456'),
+('Dnyandipa','67890')
+
+select * from shoplogin
+
+create or alter procedure sp_shoplogin
+@username varchar(30),
+@password varchar(30)
+as
+begin
+select * from shoplogin where username=@username
+and password=@password
+end
+_________________________________________________________________________________
+create table c_registration(custome_id int,customer_name varchar(30),
+contact_no varchar(30),email varchar(30) ,addres varchar(30), Dob varchar(30),username varchar(30),
+password varchar(30), con_password varchar(30))
+________________________________________________________________________________
+
+go
+CREATE PROCEDURE sp_CustomerLogin
+    @username VARCHAR(30),
+    @password VARCHAR(30),
+    @loginSuccess BIT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @loginSuccess = 0; -- Default to login failure
+
+    IF EXISTS (
+        SELECT 1
+        FROM c_registration
+        WHERE username = @username AND password = @password
+    )
+    BEGIN
+        SET @loginSuccess = 1; -- Set to login success
+    END
+END;
+
+_________________________________________________________________________________
+Create table tenantdetails
+(
+shop_no varchar (30),
+shop_name varchar(30),
+shop_owner_name varchar(30),
+categories varchar(30),
+contact varchar(30),
+rent_amount Decimal(30)
+)
+CREATE  OR ALTER PROCEDURE sp_tenantdetails
+  @shop_no VARCHAR(30),
+  @shop_name VARCHAR(30),
+  @shop_owner_name VARCHAR(30),
+  @categories VARCHAR(30),
+  @contact INT,
+  @rent_amount DECIMAL(20, 2)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  -- Input validation can be added here
+  
+  INSERT INTO tenantdetails (shop_no, shop_name, shop_owner_name, categories, contact, rent_amount)
+  VALUES (@shop_no, @shop_name, @shop_owner_name, @categories, @contact, @rent_amount);
+END
+GO
+
+CREATE OR ALTER   PROCEDURE Viewtenants
+  @shop_no VARCHAR(30)
+AS
+BEGIN
+  IF (@shop_no = '')
+  BEGIN
+    -- Use explicit column names instead of '*'
+    SELECT * FROM tenantdetails;
+  END
+  ELSE
+  BEGIN
+    SELECT * FROM tenantdetails WHERE shop_no = @shop_no;
+  END
+END
+
+_____________________________________________________________________________________________________
+
+CREATE TABLE rentdetails
+(
+shop_no varchar(30)
+shop_name varchar(30),
+rent_amount decimal(20,2),
+paid_amount decimal(20,2),
+ balance_amount decimal(20,2),
+payment_date varchar(30)
+)
+CREATE OR ALTER   PROCEDURE sp_rent_details
+  @shop_no varchar(30),
+  @shop_name VARCHAR(30),
+  @rent_amount DECIMAL(20, 2),
+  @paid_amount DECIMAL(20, 2),
+  @balance_amount DECIMAL(20, 2),
+  @payment_date VARCHAR(30)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  -- Input validation can be added here
+  
+  INSERT INTO rentdetails (shop_no, shop_name, rent_amount, paid_amount, balance_amount, payment_date)
+  VALUES (@shop_no, @shop_name, @rent_amount, @paid_amount, @balance_amount, @payment_date);
+END
+
+CREATE OR ALTER   PROCEDURE Viewrents
+  @shop_no VARCHAR(30)
+AS
+BEGIN
+  IF (@shop_no = '')
+  BEGIN
+    -- Use explicit column names instead of '*'
+    SELECT * FROM rentdetails;
+  END
+  ELSE
+  BEGIN
+    SELECT * FROM rentdetails WHERE shop_no = @shop_no;
+  END
+END
+
+__________________________________________________________________________________________________
+
+Create table Parking
+(
+ area Varchar(30),
+customer_name Varchar(30),
+contact Varchar(30),
+vehical_type Varchar(30),
+vehical_no Varchar(30),
+duration decimal(30,2),
+ pricing decimal(30,2),
+ payment Varchar(30),
+ date Varchar(30),
+)
+CREATE OR ALTER PROCEDURE [dbo].[sp_parking]
+	-- Add the parameters for the stored procedure here
+	@area varchar(30),@customer_name varchar(30),
+@contact varchar(30),@vehical_type varchar(30),@vehical_no varchar(30),
+@duration  Decimal(30,2),@pricing  Decimal(30,2) ,@payment varchar(30),
+@date varchar (30)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	insert into parking(area,customer_name,
+contact ,vehical_type ,vehical_no ,
+duration,pricing ,payment ,
+date ) values(@area,@customer_name,
+@contact ,@vehical_type ,@vehical_no ,
+@duration,@pricing ,@payment ,
+@date)
+END
+
+GO
+ALTER   procedure Viewparking
+    @vehical_no varchar(30)
+	AS
+	begin
+	if(@vehical_no='')
+	begin
+	select * from parking;
+	end
+	else
+	begin
+	select * from parking where vehical_no=@vehical_no;
+end
+end
+
+
+_____________________________________________________________________________________________________
+CREATE TABLE admin_support
+(
+shop_no Varchar(30),
+shop_name Varchar(30),
+contact Varchar(30),
+ sub Varchar(30),
+ details Varchar(30),
+ complaint_date Varchar(30),
+)
+
+CREATE OR ALTER   PROCEDURE sp_adminsupport
+  @shop_no varchar(30),
+  @shop_name VARCHAR(30),
+  @contact varchar(30),
+	@sub varchar(30),@details varchar(300),@complaint_date varchar(30)
+as
+BEGIN
+  SET NOCOUNT ON;
+
+  -- Input validation can be added here
+  
+  INSERT INTO admin_support (shop_no,
+  shop_name,
+  contact,
+	sub,details,complaint_date)
+  VALUES (@shop_no, @shop_name, @contact,
+	@sub,@details, @complaint_date);
+END
+
+GO
+ALTER   PROCEDURE [dbo].[facility_management]
+  @shop_no VARCHAR(30)
+AS
+BEGIN
+  IF (@shop_no = '')
+  BEGIN
+    -- Use explicit column names instead of '*'
+    SELECT * FROM admin_support;
+  END
+  ELSE
+  BEGIN
+    SELECT * FROM admin_support WHERE shop_no = @shop_no;
+  END
+END
+
+__________________________________________________________________________________________________
+
+CREATE TABLE feedback
+(
+ name Varchar(30),
+ email Varchar(30),
+ date Varchar(30),
+ rate Varchar(30),
+ store Varchar(30),
+ suggestions Varchar(500),
+)
+
+CREATE OR ALTER   PROCEDURE  sp_feedback
+	-- Add the parameters for the stored procedure here
+	@name varchar(30),
+@email varchar(30),@date varchar(30),@rate varchar(30),@store varchar(30),
+@suggestions varchar(500)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	insert into feedback(name,email,date,rate,store,
+suggestions) values(@name,@email,@date,@rate,@store,
+@suggestions)
+END
+GO
+ALTER   procedure sp_customer_feedback
+    @rate varchar(30)
+	AS
+	begin
+	if(@rate='')
+	begin
+	select * from feedback;
+	end
+	else
+	begin
+	select * from feedback where rate=@rate;
+
+end
+end
+
+______________________________________________________________________________________________________________
+CREATE TABLE product
+(
+Product_id int,
+Product_name Varchar(30),
+categories Varchar(30),
+Unit_price decimal (20,2),
+Quantity int,
+inventories decimal (20,2),
+purchase_date Varchar(30),
+)
+
+CREATE OR ALTER   PROCEDURE sp_productdetail
+  @Product_id INT, @Product_name VARCHAR(30),
+  @categories VARCHAR(30), @Unit_price DECIMAL(20,2),
+  @Quantity INT, @inventories DECIMAL(20,2),
+  @purchase_date VARCHAR(30)
+AS
+BEGIN
+
+  SET NOCOUNT ON;
+
+  -- Input validation can be added here
+  
+  INSERT INTO product (Product_id, Product_name,
+                         categories, Unit_price,
+                         Quantity, inventories,
+                         purchase_date)
+    VALUES (@Product_id, @Product_name,
+            @categories, @Unit_price,
+            @Quantity, @inventories,
+            @purchase_date);
+  END
+GO
+CREATE or ALTER   procedure [dbo].[view_product]
+    @categories varchar(30)
+	AS
+	begin
+	if(@categories='')
+	begin
+	select * from product;
+	end
+	else
+	begin
+	select * from product where categories=@categories;
+end
+end
+
+______________________________________________________________________________________________
+CREATE TABLE bill
+(
+ order_id Varchar(30),
+ customer_name Varchar(30),
+ adressVarchar(30),
+ contact Varchar(30),
+product_id int,
+product_name Varchar(30),
+categories Varchar(30),
+unit_price decimal (20,2),
+ quantity int,
+ total decimal (20,2),
+ bill_date Varchar(30),
+)
+
+CREATE OR ALTER   PROCEDURE sp_bbill
+  @order_id varchar(30), @customer_name varchar(30),
+  @adress varchar(50), @contact varchar(20), @product_id int, @product_name varchar(30),
+  @categories varchar(30), @unit_price decimal(20,2), @quantity int, @total decimal(20,2), @bill_date varchar(30)
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  -- Input validation can be added here
+  
+  INSERT INTO bill (order_id, customer_name,
+                    adress, contact, product_id, product_name,
+                    categories, unit_price, quantity, total, bill_date)
+  VALUES (@order_id, @customer_name,
+          @adress, @contact, @product_id, @product_name,
+          @categories, @unit_price, @quantity, @total, @bill_date);
+END
+
+GO
+
+CREATE OR ALTER   PROCEDURE sp_order
+  @order_id varchar(30)
+AS
+BEGIN
+  IF (@order_id = '')
+  BEGIN
+    -- Use explicit column names instead of '*'
+    SELECT * FROM bill;
+  END
+  ELSE
+  BEGIN
+    SELECT * FROM bill WHERE order_id = @order_id;
+
+End
+End
+
+______________________________________________________________________________________________________
+
+CREATE TABLE pickuporder
+(
+Customer_name Varchar(30),
+Contact Varchar(30),
+product_id int,
+product_name Varchar(30),
+unit_price decimal (20,2), 
+Quantity int,
+total decimal (20,2),
+location Varchar(30),
+pick_Date Varchar(30),
+pick_time Varchar(30),
+payment Varchar(30),
+)
+CREATE OR ALTER PROCEDURE sp_pickuporder
+	-- Add the parameters for the stored procedure here
+	@Customer_name varchar(30),
+@Contact varchar(30),@product_id int,@product_name varchar(30),
+@unit_price decimal(20,2),@Quantity int,@total decimal(20,2),
+@location varchar(30),@pick_Date varchar(30),@pick_time varchar(30),@payment varchar(30)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	insert into pickuporder(Customer_name,
+Contact,product_id,product_name,
+unit_price,Quantity,total,
+location,pick_Date,pick_time,payment) values(@Customer_name,
+@Contact,@product_id,@product_name,
+@unit_price,@Quantity,@total,
+@location,@pick_Date,@pick_time,@payment)
+END
+
+GO
+CREATE OR ALTER   procedure view_pickuporder
+    @pick_Date varchar(30)
+	AS
+	begin
+	if(@pick_Date='')
+	begin
+	select * from pickuporder;
+	end
+	else
+	begin
+	select * from pickuporder where pick_Date=@pick_Date;
+end
+end
+
+
+_______________________________________________________________________________________
